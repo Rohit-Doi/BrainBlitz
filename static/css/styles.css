@@ -1,0 +1,174 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    overflow-x: hidden;
+}
+
+#three-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+nav {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #00d4ff;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #00aaff;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+h1, h2, h3 {
+    color: #00d4ff;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.category-card, .avatar-card, .option {
+    background: #16213e;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.category-card:hover, .avatar-card:hover, .option:hover {
+    transform: scale(1.05);
+    background: #0f3460;
+}
+
+.avatar-card img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.option {
+    margin: 10px 0;
+}
+
+.option.selected {
+    background: #00d4ff;
+    color: #000;
+}
+
+button {
+    background: #00d4ff;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+button:hover {
+    background: #00aaff;
+}
+
+form {
+    display: inline-block;
+}
+
+form label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #e0e0e0;
+}
+
+form select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #00d4ff;
+    background: #16213e;
+    color: #e0e0e0;
+    margin-bottom: 10px;
+}
+
+form input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #00d4ff;
+    border-radius: 5px;
+    background: #16213e;
+    color: #e0e0e0;
+}
+
+.alert {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.alert.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.alert.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.progress-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+#progress-bar {
+    width: 100%;
+    height: 20px;
+    background: #16213e;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#progress {
+    height: 100%;
+    background: #00d4ff;
+    transition: width 0.5s;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}

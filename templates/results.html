@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Results - BrainBlitz{% endblock %}
+{% block content %}
+    <h1>Quiz Results</h1>
+    <div class="user-info">
+        <img src="{{ url_for('static', filename=user.avatar.split('static/')[1]) }}" alt="Avatar">
+        <span>{{ user.username }} - {{ user.brain_coins }} Brain Coins</span>
+    </div>
+    <h2>{{ results.category }} Quiz</h2>
+    <p>Your Score: {{ results.score }} / {{ results.total }}</p>
+    <p>Brain Coins Earned: {{ results.brain_coins_earned }}</p>
+    <p>{{ insights }}</p>
+    <a href="{{ url_for('index') }}"><button>Back to Home</button></a>
+{% endblock %}

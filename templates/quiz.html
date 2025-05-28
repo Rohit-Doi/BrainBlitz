@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Quiz - BrainBlitz{% endblock %}
+{% block content %}
+    <div class="user-info">
+        <img src="{{ url_for('static', filename=user.avatar.split('static/')[1]) }}" alt="Avatar">
+        <span>{{ user.username }} - {{ user.brain_coins }} Brain Coins</span>
+    </div>
+    <h2>{{ quiz_state.category }} Quiz</h2>
+    <div class="progress-container">
+        <div id="progress-bar">
+            <div id="progress" style="width: {{ (quiz_state.current_question / quiz_state.total_questions) * 100 }}%;"></div>
+        </div>
+        <p>Question {{ quiz_state.current_question + 1 }} of {{ quiz_state.total_questions }}</p>
+    </div>
+    <h3>{{ question.text }}</h3>
+    <form id="quiz-form" method="POST" action="{{ url_for('answer') }}">
+        {% for option in options %}
+            <div class="option">
+                <input type="radio" id="option-{{ loop.index }}" name="answer" value="{{ option }}" required>
+                <label for="option-{{ loop.index }}">{{ option }}</label>
+            </div>
+        {% endfor %}
+        <button type="submit">Submit Answer</button>
+    </form>
+    <div id="voice-toggle">
+        <button onclick="toggleVoice()">Toggle Voice</button>
+    </div>
+    <script>
+        let isVoiceEnabled = false;
+        function toggleVoice() {
+            isVoiceEnabled = !isVoiceEnabled;
+            if (isVoiceEnabled) {
+                speakQuestion();
+            }
+        }
+        function speakQuestion() {
+            if (!isVoiceEnabled) return;
+            const utterance = new SpeechSynthesisUtterance("{{ question.text }}");
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            window.speechSynthesis.speak(utterance);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[name="answer"]').forEach(input => {
+                input.addEventListener('change', () => {
+                    document.querySelectorAll('.option').forEach(option => option.classList.remove('selected'));
+                    input.parentElement.classList.add('selected');
+                });
+            });
+        });
+    </script>
+{% endblock %}
