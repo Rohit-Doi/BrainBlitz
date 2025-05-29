@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrainBlitz - Quiz Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
+            background-size: 400%;
+            animation: gradientShift 15s ease infinite;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            pointer-events: none;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body class="font-sans text-white">
+    <div class="container mx-auto p-4 max-w-2xl relative z-10">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="text-center">
+            <h1 class="text-4xl font-bold text-white mb-6">Welcome to BrainBlitz!</h1>
+            <button id="loginBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 mx-2">Login</button>
+            <button id="signupBtn" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 mx-2">Signup</button>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="loginScreen" class="hidden text-center">
+            <h2 class="text-2xl font-bold mb-4">Login</h2>
+            <input id="loginUsername" type="text" placeholder="Username" class="border p-2 rounded-lg mb-4 text-black w-full max-w-xs">
+            <input id="loginPassword" type="password" placeholder="Password" class="border p-2 rounded-lg mb-4 text-black w-full max-w-xs">
+            <button id="submitLogin" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Submit</button>
+            <button id="backToWelcomeFromLogin" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 mt-4">Back</button>
+        </div>
+
+        <!-- Signup Screen -->
+        <div id="signupScreen" class="hidden text-center">
+            <h2 class="text-2xl font-bold mb-4">Signup</h2>
+            <input id="signupUsername" type="text" placeholder="Username" class="border p-2 rounded-lg mb-4 text-black w-full max-w-xs">
+            <input id="signupPassword" type="password" placeholder="Password" class="border p-2 rounded-lg mb-4 text-black w-full max-w-xs">
+            <p class="text-lg mb-2">Select an Avatar:</p>
+            <div id="avatarSelection" class="flex justify-center gap-4 mb-4">
+                <label><input type="radio" name="avatar" value="🦁" class="mr-1"><span class="text-2xl">🦁</span></label>
+                <label><input type="radio" name="avatar" value="🐶" class="mr-1"><span class="text-2xl">🐶</span></label>
+                <label><input type="radio" name="avatar" value="🐱" class="mr-1"><span class="text-2xl">🐱</span></label>
+                <label><input type="radio" name="avatar" value="🐼" class="mr-1"><span class="text-2xl">🐼</span></label>
+                <label><input type="radio" name="avatar" value="🦊" class="mr-1"><span class="text-2xl">🦊</span></label>
+                <label><input type="radio" name="avatar" value="🐻" class="mr-1"><span class="text-2xl">🐻</span></label>
+            </div>
+            <button id="submitSignup" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">Submit</button>
+            <button id="backToWelcomeFromSignup" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 mt-4">Back</button>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profileScreen" class="hidden text-center">
+            <h2 class="text-2xl font-bold mb-4">Profile</h2>
+            <p class="text-lg mb-2">Welcome, <span id="currentUsername"></span>!</p>
+            <p class="text-lg mb-2">Your Avatar: <span id="currentAvatar" class="text-4xl"></span></p>
+            <p class="text-lg mb-4">Points: <span id="currentPoints"></span></p>
+            <p class="text-lg mb-2">Change Avatar:</p>
+            <div id="changeAvatarSelection" class="flex justify-center gap-4 mb-4">
+                <label><input type="radio" name="changeAvatar" value="🦁" class="mr-1"><span class="text-2xl">🦁</span></label>
+                <label><input type="radio" name="changeAvatar" value="🐶" class="mr-1"><span class="text-2xl">🐶</span></label>
+                <label><input type="radio" name="changeAvatar" value="🐱" class="mr-1"><span class="text-2xl">🐱</span></label>
+                <label><input type="radio" name="changeAvatar" value="🐼" class="mr-1"><span class="text-2xl">🐼</span></label>
+                <label><input type="radio" name="changeAvatar" value="🦊" class="mr-1"><span class="text-2xl">🦊</span></label>
+                <label><input type="radio" name="changeAvatar" value="🐻" class="mr-1"><span class="text-2xl">🐻</span></label>
+            </div>
+            <button id="saveAvatar" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 mb-4">Save Avatar</button>
+            <button id="toStartScreen" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">Play Quiz</button>
+            <button id="logout" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 mt-4">Logout</button>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="startScreen" class="hidden text-center">
+            <h1 class="text-4xl font-bold text-white mb-2">BrainBlitz</h1>
+            <p class="text-lg mb-2">Avatar: <span id="startAvatar" class="text-4xl"></span></p>
+            <p class="text-lg mb-4">Points: <span id="startPoints"></span></p>
+            <p class="text-lg mb-4">Each quiz costs 10 points to play.</p>
+            <label for="categorySelect" class="block text-lg mb-2">Select a Category:</label>
+            <select id="categorySelect" class="border p-2 rounded-lg mb-4 text-black">
+                <option value="9">General Knowledge</option>
+                <option value="17">Science & Nature</option>
+                <option value="23">History</option>
+                <option value="21">Sports</option>
+                <option value="11">Entertainment: Film</option>
+                <option value="15">Entertainment: Video Games</option>
+            </select>
+            <button id="startQuiz" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 block mx-auto">Start Quiz</button>
+            <button id="viewLeaderboard" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 mt-4">View Leaderboard</button>
+            <button id="backToProfile" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 mt-4">Back to Profile</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quizScreen" class="hidden">
+            <div id="questionContainer" class="bg-white bg-opacity-90 p-6 rounded-lg shadow-md mb-4 text-black">
+                <h2 id="question" class="text-xl font-semibold mb-4"></h2>
+                <div id="options" class="space-y-2"></div>
+            </div>
+            <p class="text-lg font-medium mb-2">Coins: <span id="coins">0</span></p>
+            <p class="text-lg font-medium mb-2">Streak: <span id="streak">0</span></p>
+            <p class="text-lg font-medium mb-2">Points: <span id="quizPoints"></span></p>
+            <p class="text-lg font-medium mb-4">Question <span id="currentQuestion">1</span> of 10</p>
+        </div>
+
+        <!-- End Screen -->
+        <div id="endScreen" class="hidden text-center">
+            <h2 class="text-2xl font-bold mb-4">Quiz Complete!</h2>
+            <p class="text-lg mb-2">Your final coins: <span id="finalCoins"></span></p>
+            <p class="text-lg mb-4">Points earned: <span id="pointsEarned"></span></p>
+            <input id="playerName" type="text" placeholder="Enter your name for leaderboard" class="border p-2 rounded-lg mb-4 text-black w-full max-w-xs" readonly>
+            <button id="saveScore" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">Save Score</button>
+            <button id="playAgain" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 mt-4">Play Again</button>
+            <button id="viewLeaderboardEnd" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 mt-4">View Leaderboard</button>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="leaderboardScreen" class="hidden">
+            <h2 class="text-2xl font-bold text-center mb-4">Leaderboard</h2>
+            <div id="leaderboard" class="bg-white bg-opacity-90 p-4 rounded-lg shadow-md mb-4 text-black"></div>
+            <button id="backToStart" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 block mx-auto">Back to Start</button>
+        </div>
+    </div>
+
+    <script>
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const loginScreen = document.getElementById('loginScreen');
+        const signupScreen = document.getElementById('signupScreen');
+        const profileScreen = document.getElementById('profileScreen');
+        const startScreen = document.getElementById('startScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const endScreen = document.getElementById('endScreen');
+        const leaderboardScreen = document.getElementById('leaderboardScreen');
+
+        const loginUsername = document.getElementById('loginUsername');
+        const loginPassword = document.getElementById('loginPassword');
+        const signupUsername = document.getElementById('signupUsername');
+        const signupPassword = document.getElementById('signupPassword');
+        const currentUsername = document.getElementById('currentUsername');
+        const currentAvatar = document.getElementById('currentAvatar');
+        const currentPoints = document.getElementById('currentPoints');
+        const startAvatar = document.getElementById('startAvatar');
+        const startPoints = document.getElementById('startPoints');
+        const quizPoints = document.getElementById('quizPoints');
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const coinsElement = document.getElementById('coins');
+        const streakElement = document.getElementById('streak');
+        const finalCoinsElement = document.getElementById('finalCoins');
+        const pointsEarnedElement = document.getElementById('pointsEarned');
+        const currentQuestionElement = document.getElementById('currentQuestion');
+        const playerNameInput = document.getElementById('playerName');
+        const leaderboardElement = document.getElementById('leaderboard');
+        const categorySelect = document.getElementById('categorySelect');
+
+        let currentUser = null;
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let coins = 0;
+        let streak = 0;
+        const totalQuestions = 10;
+        const pointsPerQuiz = 10;
+
+        // Check if user is already logged in
+        window.addEventListener('load', () => {
+            const loggedInUser = localStorage.getItem('currentUser');
+            if (loggedInUser) {
+                currentUser = JSON.parse(localStorage.getItem('users'))?.find(u => u.username === loggedInUser);
+                if (currentUser) {
+                    showProfileScreen();
+                }
+            }
+        });
+
+        // Welcome screen buttons
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            welcomeScreen.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+        });
+        document.getElementById('signupBtn').addEventListener('click', () => {
+            welcomeScreen.classList.add('hidden');
+            signupScreen.classList.remove('hidden');
+        });
+
+        // Back to welcome
+        document.getElementById('backToWelcomeFromLogin').addEventListener('click', () => {
+            loginScreen.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+        });
+        document.getElementById('backToWelcomeFromSignup').addEventListener('click', () => {
+            signupScreen.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+        });
+
+        // Login
+        document.getElementById('submitLogin').addEventListener('click', () => {
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value.trim();
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', username);
+                showProfileScreen();
+            } else {
+                alert('Invalid username or password!');
+            }
+        });
+
+        // Signup
+        document.getElementById('submitSignup').addEventListener('click', () => {
+            const username = signupUsername.value.trim();
+            const password = signupPassword.value.trim();
+            const avatar = document.querySelector('input[name="avatar"]:checked')?.value;
+
+            if (!username || !password || !avatar) {
+                alert('Please fill in all fields and select an avatar!');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            if (users.some(u => u.username === username)) {
+                alert('Username already exists!');
+                return;
+            }
+
+            const newUser = { username, password, avatar, points: 50 };
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            currentUser = newUser;
+            localStorage.setItem('currentUser', username);
+            showProfileScreen();
+        });
+
+        // Show Profile Screen
+        function showProfileScreen() {
+            welcomeScreen.classList.add('hidden');
+            loginScreen.classList.add('hidden');
+            signupScreen.classList.add('hidden');
+            profileScreen.classList.remove('hidden');
+            currentUsername.textContent = currentUser.username;
+            currentAvatar.textContent = currentUser.avatar;
+            currentPoints.textContent = currentUser.points;
+        }
+
+        // Change Avatar
+        document.getElementById('saveAvatar').addEventListener('click', () => {
+            const newAvatar = document.querySelector('input[name="changeAvatar"]:checked')?.value;
+            if (newAvatar) {
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const userIndex = users.findIndex(u => u.username === currentUser.username);
+                users[userIndex].avatar = newAvatar;
+                localStorage.setItem('users', JSON.stringify(users));
+                currentUser.avatar = newAvatar;
+                currentAvatar.textContent = newAvatar;
+                alert('Avatar updated!');
+            } else {
+                alert('Please select an avatar!');
+            }
+        });
+
+        // To Start Screen
+        document.getElementById('toStartScreen').addEventListener('click', () => {
+            profileScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            startAvatar.textContent = currentUser.avatar;
+            startPoints.textContent = currentUser.points;
+        });
+
+        // Back to Profile
+        document.getElementById('backToProfile').addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            profileScreen.classList.remove('hidden');
+        });
+
+        // Logout
+        document.getElementById('logout').addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            profileScreen.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+        });
+
+        // Fetch questions from Open Trivia Database API based on selected category
+        async function fetchQuestions() {
+            try {
+                const category = categorySelect.value;
+                const response = await fetch(`https://opentdb.com/api.php?amount=10&category=${category}&type=multiple`);
+                const data = await response.json();
+                if (data.response_code !== 0) {
+                    throw new Error('Failed to fetch questions');
+                }
+                questions = data.results.map(q => ({
+                    question: q.question,
+                    correct_answer: q.correct_answer,
+                    incorrect_answers: q.incorrect_answers
+                }));
+            } catch (error) {
+                console.error('Error fetching questions:', error);
+                alert('Failed to load questions. Please try again later.');
+                resetToStart();
+            }
+        }
+
+        // Start the quiz
+        document.getElementById('startQuiz').addEventListener('click', async () => {
+            if (currentUser.points < pointsPerQuiz) {
+                alert('Not enough points! You need 10 points to play. Earn more by completing quizzes.');
+                return;
+            }
+
+            currentUser.points -= pointsPerQuiz;
+            updateUserPoints();
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            quizPoints.textContent = currentUser.points;
+            await fetchQuestions();
+            if (questions.length > 0) {
+                displayQuestion();
+            }
+        });
+
+        // Display the current question
+        function displayQuestion() {
+            const q = questions[currentQuestionIndex];
+            questionElement.innerHTML = q.question;
+            currentQuestionElement.textContent = currentQuestionIndex + 1;
+            optionsElement.innerHTML = '';
+
+            // Combine and shuffle answers
+            const allAnswers = [...q.incorrect_answers, q.correct_answer];
+            allAnswers.sort(() => Math.random() - 0.5);
+
+            allAnswers.forEach(answer => {
+                const button = document.createElement('button');
+                button.classList.add('bg-blue-200', 'text-blue-800', 'p-3', 'rounded-lg', 'w-full', 'hover:bg-blue-300');
+                button.innerHTML = answer;
+                button.addEventListener('click', () => handleAnswer(answer, q.correct_answer));
+                optionsElement.appendChild(button);
+            });
+        }
+
+        // Handle answer selection
+        function handleAnswer(selected, correct) {
+            if (selected === correct) {
+                streak++;
+                const baseCoins = 10;
+                const streakBonus = streak > 1 ? 5 * (streak - 1) : 0;
+                coins += baseCoins + streakBonus;
+                coinsElement.textContent = coins;
+                streakElement.textContent = streak;
+            } else {
+                streak = 0;
+                streakElement.textContent = streak;
+            }
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestions) {
+                displayQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        // End the quiz and show the end screen
+        function endQuiz() {
+            quizScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalCoinsElement.textContent = coins;
+            const pointsEarned = coins; // 1 coin = 1 point
+            pointsEarnedElement.textContent = pointsEarned;
+            currentUser.points += pointsEarned;
+            updateUserPoints();
+            playerNameInput.value = currentUser.username;
+        }
+
+        // Save the score to the leaderboard
+        document.getElementById('saveScore').addEventListener('click', () => {
+            const name = playerNameInput.value.trim();
+            if (name) {
+                const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+                leaderboard.push({ name, score: coins, avatar: currentUser.avatar });
+                leaderboard.sort((a, b) => b.score - a.score);
+                if (leaderboard.length > 10) leaderboard.length = 10; // Keep top 10
+                localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+                showLeaderboard();
+            }
+        });
+
+        // Show the leaderboard
+        function showLeaderboard() {
+            endScreen.classList.add('hidden');
+            startScreen.classList.add('hidden');
+            leaderboardScreen.classList.remove('hidden');
+
+            const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+            leaderboardElement.innerHTML = leaderboard.length ? leaderboard.map((entry, index) =>
+                `<p class="text-lg"><span class="text-4xl">${entry.avatar}</span> ${index + 1}. ${entry.name}: ${entry.score} coins</p>`
+            ).join('') : '<p class="text-lg">No scores yet!</p>';
+        }
+
+        // View leaderboard from start or end screen
+        document.getElementById('viewLeaderboard').addEventListener('click', showLeaderboard);
+        document.getElementById('viewLeaderboardEnd').addEventListener('click', showLeaderboard);
+
+        // Play again
+        document.getElementById('playAgain').addEventListener('click', () => {
+            if (currentUser.points < pointsPerQuiz) {
+                alert('Not enough points! You need 10 points to play. Earn more by completing quizzes.');
+                startScreen.classList.remove('hidden');
+                endScreen.classList.add('hidden');
+                return;
+            }
+
+            resetToStart();
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            currentUser.points -= pointsPerQuiz;
+            updateUserPoints();
+            quizPoints.textContent = currentUser.points;
+            fetchQuestions().then(() => {
+                if (questions.length > 0) {
+                    displayQuestion();
+                }
+            });
+        });
+
+        // Back to start from leaderboard
+        document.getElementById('backToStart').addEventListener('click', resetToStart);
+
+        // Reset to start screen
+        function resetToStart() {
+            startScreen.classList.remove('hidden');
+            quizScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            leaderboardScreen.classList.add('hidden');
+            currentQuestionIndex = 0;
+            coins = 0;
+            streak = 0;
+            coinsElement.textContent = coins;
+            streakElement.textContent = streak;
+            startAvatar.textContent = currentUser.avatar;
+            startPoints.textContent = currentUser.points;
+            questions = [];
+        }
+
+        // Update user points in localStorage
+        function updateUserPoints() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+            users[userIndex].points = currentUser.points;
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+    </script>
+</body>
+</html>
